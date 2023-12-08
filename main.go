@@ -30,27 +30,28 @@ func mdToHTML(md []byte) []byte {
 }
 
 func createHTMLFile(filename string, data map[string]string) error {
-    
-    
-    // Create a template context
-    tmpl := template.Must(template.ParseFiles("template.html"))
 
-// Create the file and get the file pointer
-file, err := os.Create(filename)
-if err != nil {
-	return err
+	// Create a template context
+	tmpl := template.Must(template.ParseFiles("template.html"))
+
+	// Create the file and get the file pointer
+	file, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Data still ok
+	fmt.Printf(data["content"])
+	// Execute the template with the file pointer and data
+	err = tmpl.Execute(file, data)
+	//data escaped
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
-defer file.Close()
-
-// Execute the template with the file pointer and data
-err = tmpl.Execute(file, data)
-if err != nil {
-	return err
-}
-
-return nil
-}
-
 
 func main() {
 	ctx := context.Background()
@@ -59,16 +60,21 @@ func main() {
 	client := github.NewClient(nil)
 	oneWeekAgo := now.AddDate(0, 0, -7)
 
-	
 	var htmlContent string
 
 	weekfile := oneWeekAgo.Format("2006-01-02") + ".html"
-	
+
 	releases, _, err := client.Repositories.ListReleases(ctx, "coredns", "coredns", &github.ListOptions{
 		PerPage: 5,
 	})
 
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	htmlContent += "<h2>Latest Releases for " + oneWeekAgo.Format("2006-01-02") + "</h2>"
+
+
 
 	for _, release := range releases {
 		if release.GetPublishedAt().Before(oneWeekAgo) {
@@ -86,7 +92,6 @@ func main() {
 
 	}
 
-	
 
 
 	data := make(map[string]string)
