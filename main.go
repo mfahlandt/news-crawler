@@ -24,6 +24,31 @@ var repos map[string][]string = map[string][]string{
 		"csi-driver-vsphere",
 	},
 	"containernetworking": []string{"cni"},
+	"cri-o": []string{
+		"cri-o",
+		"ocicni",
+	},
+	"containerd": []string{
+		"containerd",
+		"nerdctl",
+	},
+	"kubernetes": []string{
+		"kops",
+		"kubeadm",
+		"ngninx-ingress",
+		"cluster-api",
+	},
+	"etcd-io": []string{
+		"etcd",
+	},
+	"grpc" : []string{
+		"grpc",
+	},
+	"golang": []string{
+		"go",
+	},
+
+	
 }
 
 // mdToHTML converts markdown to HTML
@@ -106,9 +131,8 @@ func main() {
 			if err == nil {
 				htmlContent += "<h2>" + p + "/" + r + "</h2> "
 				for _, release := range releases {
-					if release.GetPublishedAt().Before(oneWeekAgo) {
+					if release.GetPublishedAt().After(oneWeekAgo) {
 
-						
 						htmlContent += "<h3>Release notes for " + release.GetName() + "</h3>"
 						htmlContent += "<h4>" + release.GetPublishedAt().Format("2006-01-02") + "</h4>"
 
